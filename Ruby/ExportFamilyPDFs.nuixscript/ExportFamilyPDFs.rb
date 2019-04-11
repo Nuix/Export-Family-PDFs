@@ -62,6 +62,11 @@ dialog.setHelpFile(File.join(script_directory,"Help.html"))
 main_tab = dialog.addTab("main_tab","Main")
 
 # Controls to determine input items
+if current_licence.hasFeature("EXPORT_ITEMS") && $current_selected_items.size > 0
+	main_tab.appendRadioButton("use_selected_items","Use Selected Items (#{$current_selected_items.size})","input_item_group",false)
+	main_tab.getControl("use_selected_items").setSelected(true)
+end
+
 if current_licence.hasFeature("EXPORT_LEGAL")
 	if production_set_names.size > 0
 		main_tab.appendRadioButton("use_prod_items","Use Production Set Items","input_item_group",false)
@@ -81,33 +86,29 @@ else
 		exit 1
 	end
 end
-
-if current_licence.hasFeature("EXPORT_ITEMS") && $current_selected_items.size > 0
-	main_tab.appendRadioButton("use_selected_items","Use Selected Items (#{$current_selected_items.size})","input_item_group",false)
-	main_tab.getControl("use_selected_items").setSelected(true)
-end
+main_tab.appendHeader(" ")
 
 main_tab.appendDirectoryChooser("export_directory","Export Directory")
+main_tab.appendTextField("output_template","File Name Template","{export_directory}\\{evidence_name}\\{path}\\{name}.pdf")
+if production_set_names.size > 0
+	main_tab.appendComboBox("production_set_name","{docid} Production Set",production_set_names)
+end
 main_tab.appendCheckBox("regenerate_stored","Regenerate Stored PDFs",false)
 main_tab.appendCheckBox("add_bookmarks","Add Bookmarks",true)
-main_tab.appendTextField("output_template","Output Template","{export_directory}\\{evidence_name}\\{path}\\{name}.pdf")
-if production_set_names.size > 0
-	main_tab.appendComboBox("production_set_name","DOCID Production Set",production_set_names)
-end
-
-# Can only import the PDFs back in if you have the licence feature ANALYSIS
-if current_licence.hasFeature("ANALYSIS")
-	main_tab.appendCheckBox("import_combined_pdf","Import Combined PDF",false)
-end
-
-main_tab.appendCheckBox("delete_temp_pdfs","Delete Temporary Exported PDFs",true)
-
 # Add options for DAT generation if licence allows it
 if current_licence.hasFeature("EXPORT_LEGAL")
 	main_tab.appendCheckBox("export_dat","Generate DAT",true)
 	main_tab.appendComboBox("dat_profile","Profile",profile_names)
 	main_tab.enabledOnlyWhenChecked("dat_profile","export_dat")
 end
+main_tab.appendHeader(" ")
+
+# Can only import the PDFs back in if you have the licence feature ANALYSIS
+if current_licence.hasFeature("ANALYSIS")
+	main_tab.appendCheckBox("import_combined_pdf","Import Combined PDF",false)
+end
+main_tab.appendCheckBox("delete_temp_pdfs","Delete Temporary Exported PDFs",true)
+main_tab.appendHeader(" ")
 
 # Check if current licence can work with markup sets
 if current_licence.hasFeature("FAST_REVIEW") && current_licence.hasFeature("PRODUCTION_SET")
