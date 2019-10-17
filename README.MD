@@ -1,7 +1,7 @@
 Export Family PDFs
 ==================
 
-![This script was last tested in Nuix 7.4](https://img.shields.io/badge/Script%20Tested%20in%20Nuix-7.4-green.svg)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) ![This script was last tested in Nuix 8.0](https://img.shields.io/badge/Script%20Tested%20in%20Nuix-8.0-green.svg)
 
 View the GitHub project [here](https://github.com/Nuix/Export-Family-PDFs) or download the latest release [here](https://github.com/Nuix/Export-Family-PDFs/releases).
 
@@ -10,6 +10,8 @@ View the GitHub project [here](https://github.com/Nuix/Export-Family-PDFs) or do
 **Written By:** Jason Wells
 
 This script provides a way to generate PDF files which are a combination of individual per item PDF files. Files are grouped by family membership. Items which are not a member of a family will yield a PDF with only the single item.
+
+Note that only items which are selected when the script is ran will be included in a given PDF.  For example, if you select an email, but not its attachments, then the resulting PDF will only contain the selected email and not its attachments.  The script behaves this way, rather than resolving each item to its full family, so that you can selectively determine which family members ultimately end up in the PDF.  If you want the full families regardless, then it is recommended you make a selection, then choose "Show Families", select all the resulting items and then run this script.
 
 # Getting Started
 

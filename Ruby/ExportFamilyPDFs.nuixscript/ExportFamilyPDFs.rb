@@ -38,9 +38,14 @@ if debug_feature_set
 end
 
 # Get list of all the metadata profiles available
-profile_names = $utilities.getMetadataProfileStore.getMetadataProfiles.map{|p|p.getName}
+metadata_profile_names = $utilities.getMetadataProfileStore.getMetadataProfiles.map{|p|p.getName}
 # Get list of all production set names
 production_set_names = $current_case.getProductionSets.map{|ps|ps.getName}
+
+if NuixConnection.getCurrentNuixVersion.isAtLeast("7.6")
+	# Get list of imaging profiles
+	imaging_profile_names = $utilities.getImagingProfileStore.getProfileNames
+end
 
 # Make sure minimum needs for input items is met
 if production_set_names.size < 1 && $current_selected_items.size < 1
@@ -93,12 +98,15 @@ main_tab.appendTextField("output_template","File Name Template","{export_directo
 if production_set_names.size > 0
 	main_tab.appendComboBox("production_set_name","{docid} Production Set",production_set_names)
 end
+if NuixConnection.getCurrentNuixVersion.isAtLeast("7.6")
+	main_tab.appendComboBox("imaging_profile","Imaging Profile",imaging_profile_names)
+end
 main_tab.appendCheckBox("regenerate_stored","Regenerate Stored PDFs",false)
 main_tab.appendCheckBox("add_bookmarks","Add Bookmarks",true)
 # Add options for DAT generation if licence allows it
 if current_licence.hasFeature("EXPORT_LEGAL")
 	main_tab.appendCheckBox("export_dat","Generate DAT",true)
-	main_tab.appendComboBox("dat_profile","Profile",profile_names)
+	main_tab.appendComboBox("dat_profile","Profile",metadata_profile_names)
 	main_tab.enabledOnlyWhenChecked("dat_profile","export_dat")
 end
 main_tab.appendHeader(" ")
@@ -223,6 +231,10 @@ if dialog.getDialogResult == true
 	output_template = values["output_template"]
 	add_bookmarks = values["add_bookmarks"]
 	worker_settings = values["worker_settings"]
+	imaging_profile = ""
+	if NuixConnection.getCurrentNuixVersion.isAtLeast("7.6")
+		imaging_profile = values["imaging_profile"]
+	end
 
 	# Deny importing PDF regardless of what setting may have been passed on
 	# if the licence does not allow it
@@ -301,6 +313,10 @@ if dialog.getDialogResult == true
 			"path" => "PDFs",
 			"regenerateStored" => values["regenerate_stored"],
 		})
+
+		if NuixConnection.getCurrentNuixVersion.isAtLeast("7.6")
+			exporter.setImagingProfile(imaging_profile)
+		end
 
 		#Can only call this if the the licence has the feature "EXPORT_LEGAL"
 		if current_licence.hasFeature("EXPORT_LEGAL")
